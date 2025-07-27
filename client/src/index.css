@@ -1,0 +1,40 @@
+/* src/index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.page-container {
+  @apply max-w-2xl mx-auto mt-10 px-4;
+}
+
+.btn-primary {
+  @apply bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-600 transition;
+}
+
+.form-group {
+  @apply mb-4;
+}
+
+body {
+  @apply bg-gray-900 text-white;
+}
+
+input, select {
+  @apply w-full border border-gray-300 rounded px-3 py-2 mb-1;
+}
+
+label {
+  @apply block font-medium mb-1;
+}
+
+.error-msg {
+  @apply text-red-500 text-sm mt-1;
+}
+
+.success-message {
+  @apply text-green-600 font-semibold mb-4;
+}
+
+.donor-card {
+  @apply border border-gray-300 rounded p-4 shadow-md mb-4 bg-white;
+}
