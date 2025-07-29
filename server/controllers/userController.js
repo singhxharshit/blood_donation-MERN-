@@ -14,15 +14,19 @@ const generateToken = (id) => {
 // @route   POST /api/users/register
 // @access  Public
 export const registerUser = async (req, res) => {
+  console.log("🟢 Hit /api/users/register with:", req.body);
+
   try {
     const { name, email, password, bloodGroup, contactNumber, address } = req.body;
 
     if (!name || !email || !password || !bloodGroup || !contactNumber || !address) {
+      console.log("❌ Missing fields");
       return res.status(400).json({ message: 'Please fill in all fields' });
     }
 
     const existingUser = await Donor.findOne({ email });
     if (existingUser) {
+      console.log("⚠️ User already exists");
       return res.status(400).json({ message: 'User already exists' });
     }
 
@@ -34,10 +38,12 @@ export const registerUser = async (req, res) => {
       password: hashedPassword,
       bloodGroup,
       contactNumber,
-      address
+      address,
     });
 
     await newUser.save();
+    console.log("✅ User saved to MongoDB:", newUser);
+
     res.status(201).json({ message: 'User registered successfully' });
 
   } catch (error) {

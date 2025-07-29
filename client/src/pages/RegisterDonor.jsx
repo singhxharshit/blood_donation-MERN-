@@ -14,6 +14,7 @@ function RegisterDonor() {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -27,10 +28,16 @@ function RegisterDonor() {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setIsSubmitting(true);
 
     try {
+      console.log("📤 Submitting registration:", formData);
+
       const res = await axios.post('http://localhost:5000/api/users/register', formData);
-      setSuccess(res.data.message);
+
+      console.log("✅ Registration success:", res.data);
+
+      setSuccess(res.data.message || 'Registration successful!');
       setFormData({
         name: '',
         email: '',
@@ -39,9 +46,19 @@ function RegisterDonor() {
         contactNumber: '',
         address: ''
       });
+
       setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      console.error("❌ Registration error:", err.response || err);
+
+      const msg =
+        err.response?.data?.message ||
+        err.message ||
+        'Something went wrong. Please try again.';
+
+      setError(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -53,30 +70,40 @@ function RegisterDonor() {
       {success && <p className="text-green-600 text-sm mb-2">{success}</p>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input type="text" name="name" placeholder="Name" value={formData.name} onChange={handleChange} className="w-full border px-3 py-2 rounded text-black bg-white" />
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} className="w-full border px-3 py-2 rounded text-black bg-white" />
-        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} className="w-full border px-3 py-2 rounded text-black bg-white" />
+        <input type="text" name="name" placeholder="Name" required value={formData.name} onChange={handleChange} className="w-full border px-3 py-2 rounded bg-white" />
+        <input type="email" name="email" placeholder="Email" required value={formData.email} onChange={handleChange} className="w-full border px-3 py-2 rounded bg-white" />
+        <input type="password" name="password" placeholder="Password" required value={formData.password} onChange={handleChange} className="w-full border px-3 py-2 rounded bg-white" />
+        
         <select
-  name="bloodGroup"
-  value={formData.bloodGroup}
-  onChange={handleChange}
-  className="w-full border px-3 py-2 rounded text-black bg-white"
-  required
->
-  <option value="">Select Blood Group</option>
-  <option value="A+">A+</option>
-  <option value="A-">A-</option>
-  <option value="B+">B+</option>
-  <option value="B-">B-</option>
-  <option value="AB+">AB+</option>
-  <option value="AB-">AB-</option>
-  <option value="O+">O+</option>
-  <option value="O-">O-</option>
-</select>
+          name="bloodGroup"
+          value={formData.bloodGroup}
+          onChange={handleChange}
+          className="w-full border px-3 py-2 rounded bg-white"
+          required
+        >
+          <option value="">Select Blood Group</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+        </select>
 
-        <input type="text" name="contactNumber" placeholder="Contact Number" value={formData.contactNumber} onChange={handleChange} className="w-full border px-3 py-2 rounded text-black bg-white" />
-        <input type="text" name="address" placeholder="Address" value={formData.address} onChange={handleChange} className="w-full border px-3 py-2 rounded text-black bg-white" />
-        <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Register</button>
+        <input type="text" name="contactNumber" placeholder="Contact Number" required value={formData.contactNumber} onChange={handleChange} className="w-full border px-3 py-2 rounded bg-white" />
+        <input type="text" name="address" placeholder="Address" required value={formData.address} onChange={handleChange} className="w-full border px-3 py-2 rounded bg-white" />
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`w-full text-white py-2 rounded ${
+            isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+          }`}
+        >
+          {isSubmitting ? 'Registering...' : 'Register'}
+        </button>
       </form>
     </div>
   );
